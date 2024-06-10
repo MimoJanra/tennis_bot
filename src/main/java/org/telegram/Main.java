@@ -7,7 +7,7 @@ public class Main {
         String botToken = "12345:YOUR_TOKEN";
         try (TelegramBotsLongPollingApplication botsApplication = new TelegramBotsLongPollingApplication()) {
             botsApplication.registerBot(botToken, new Keyboard(botToken));
-            System.out.println("BotApi20 successfully started!");
+            System.out.println("successfully started!");
             Thread.currentThread().join();
         } catch (Exception e) {
             e.printStackTrace();
