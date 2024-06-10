@@ -1,0 +1,97 @@
+# Gradle
+.gradle/
+build/
+
+# IDEs and editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.jmx
+*.out
+
+# Logs
+*.log
+
+# IntelliJ IDEA
+out/
+.idea/
+.idea_modules/
+*.ipr
+*.iws
+*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/libraries
+.idea/artifacts
+.idea/shelf
+.idea/modules.xml
+.idea/inspectionProfiles
+.idea/gradle.xml
+.idea/vcs.xml
+.idea/misc.xml
+.idea/dataSources/
+.idea/dataSources.ids
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/sqlDialects.xml
+.idea/dataSources.*
+.idea/sqlDataSources.*
+.idea/datasourceTemplates.xml
+.idea/datasourceTemplates/
+.idea/jarRepositories.xml
+.idea/jarRepositories.xml
+.idea/replhistory.xml
+.idea/replhistory/
+.idea/node_modules.xml
+.idea/webServers.xml
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+target/
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.class
+*.swp
