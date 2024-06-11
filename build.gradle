@@ -5,7 +5,6 @@ plugins {
 }
 
 group = 'org.telegram'
-version = '7.3.0'
 
 sourceCompatibility = '17'
 targetCompatibility = '17'
@@ -14,67 +13,11 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    httpcomponentsVersion = '4.5.3'
-    telegrambotsVersion = '7.4.0'
-    jsonVersion = '20240303'
-    jsoupVersion = '1.17.2'
-    commonsioVersion = '2.15.1'
-    lombokVersion = '1.18.30'
-    okhttpVersion = '4.12.0'
-    slf4jVersion = '2.0.12'
-}
-
 dependencies {
-    implementation "org.telegram:telegrambots-longpolling:${telegrambotsVersion}"
-    implementation "org.telegram:telegrambots-webhook:${telegrambotsVersion}"
-    implementation "org.telegram:telegrambots-client:${telegrambotsVersion}"
-    implementation "org.telegram:telegrambots-extensions:${telegrambotsVersion}"
-    implementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
-    compileOnly "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    implementation "org.json:json:${jsonVersion}"
-    implementation "commons-io:commons-io:${commonsioVersion}"
-    implementation "org.jsoup:jsoup:${jsoupVersion}"
+    implementation 'org.telegram:telegrambots-springboot-longpolling-starter:7.4.0'
+    implementation 'org.telegram:telegrambots-client:7.4.0'
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-}
-
-application {
-    mainClassName = 'org.telegram.Main'
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'org.telegram.Main'
-        )
-    }
-}
-
-task copyDependencies(type: Copy) {
-    from configurations.runtimeClasspath
-    into "${buildDir}/lib"
-}
-
-build.dependsOn copyDependencies
-
-tasks.register('javadocJar', Jar) {
-    archiveClassifier.set('javadoc')
-    from tasks.javadoc
-}
-
-tasks.register('sourcesJar', Jar) {
-    archiveClassifier.set('sources')
-    from sourceSets.main.allSource
 }
