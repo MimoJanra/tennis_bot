@@ -29,12 +29,14 @@ public class Bot extends TelegramLongPollingBot {
         Long userId = UpdateUtil.getUserId(update);
         String input = UpdateUtil.getInput(update);
 
+        System.out.println("Received update from user: " + userId + " with input: " + input);
+
         boolean isFinished = false;
         if (commandContainer.hasCommand(input)) {   // user starts new command
             Command command = commandContainer.getCommand(input);
             currentUserCommands.put(userId, command);
             isFinished = command.execute(update, true);
-        } else if (currentUserCommands.containsKey(userId)) {                                    // user continues some command
+        } else if (currentUserCommands.containsKey(userId)) {  // user continues some command
             isFinished = currentUserCommands.get(userId).execute(update, false);
         }
 

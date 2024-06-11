@@ -13,15 +13,23 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class Runner {
 
     private final Bot bot;
+    private boolean isBotRegistered = false;
 
     @EventListener(ApplicationReadyEvent.class)
     public void registerBot() {
-        try {
-            TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            botsApi.registerBot(bot);
+        if (!isBotRegistered) {
+            System.out.println("Registering bot...");
+            try {
+                TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+                botsApi.registerBot(bot);
+                isBotRegistered = true;
+                System.out.println("Bot registered successfully.");
 
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Bot is already registered.");
         }
     }
 }
