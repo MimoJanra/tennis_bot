@@ -1,28 +1,30 @@
 package org.telegram.models;
 
+import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Data
-@Document(collection = "bookings")
+@Entity
+@Table(name = "bookings")
 public class Booking {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private LocalDateTime timeStart;
     private LocalDateTime timeEnd;
     private boolean isApproved;
 
-    @DBRef
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @DBRef
+    @ManyToOne
+    @JoinColumn(name = "booking_object_id")
     private BookingObject bookingObject;
 
     public String getFullText(boolean isAdmin) {

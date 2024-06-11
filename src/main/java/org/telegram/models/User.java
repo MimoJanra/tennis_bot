@@ -1,21 +1,21 @@
 package org.telegram.models;
 
+import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.List;
 
 @Data
-@Document(collection = "users")
+@Entity
+@Table(name = "users")
 public class User {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String username;
     private boolean isAdmin;
 
-    @DBRef
+    @OneToMany(mappedBy = "user")
     private List<Booking> bookings;
 }
