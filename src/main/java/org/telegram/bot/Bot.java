@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
 @Component
 public class Bot extends TelegramLongPollingBot {
 
@@ -23,6 +22,16 @@ public class Bot extends TelegramLongPollingBot {
 
     private final CommandContainer commandContainer;
     private final Map<Long, Command> currentUserCommands = new HashMap<>();
+
+    private static Bot instance;
+
+    public Bot(CommandContainer commandContainer) {
+        if (instance != null) {
+            throw new IllegalStateException("Bot instance already exists!");
+        }
+        this.commandContainer = commandContainer;
+        instance = this;
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
