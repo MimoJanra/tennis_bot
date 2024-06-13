@@ -17,6 +17,7 @@ public class Runner {
 
     @EventListener(ApplicationReadyEvent.class)
     public void registerBot() {
+        System.out.println("ApplicationReadyEvent triggered.");
         if (!isBotRegistered) {
             System.out.println("Registering bot...");
             try {
@@ -24,7 +25,6 @@ public class Runner {
                 botsApi.registerBot(bot);
                 isBotRegistered = true;
                 System.out.println("Bot registered successfully.");
-
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }

@@ -28,9 +28,8 @@ public class BookingService {
         return bookingRepository.findById(Long.parseLong(id));
     }
 
-    public List<Booking> findByDateAndObject(LocalDate date, BookingObject object) {
-        return bookingRepository.findByTimeStartBetweenAndBookingObject(date.atStartOfDay(),
-                date.plusDays(1).atStartOfDay(), object);
+    public List<Booking> findByDateAndCourt(LocalDate date, BookingObject court) {
+        return bookingRepository.findByDateAndCourt(date, court);
     }
 
     public List<Booking> findByUserId(long userId) {

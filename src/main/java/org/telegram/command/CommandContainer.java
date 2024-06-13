@@ -27,5 +27,4 @@ public class CommandContainer {
     public boolean hasCommand(String name) {
         return commandClasses.containsKey(name);
     }
-
 }

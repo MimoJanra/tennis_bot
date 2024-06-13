@@ -17,7 +17,7 @@ public class KeyboardMaker {
         keyboardRow1.add(CommandName.MY_BOOKINGS.getText());
 
         KeyboardRow keyboardRow2 = new KeyboardRow();
-        keyboardRow2.add(CommandName.ADD_OBJECT.getText());
+        keyboardRow2.add(CommandName.ADD_TRAINING.getText());
         keyboardRow2.add(CommandName.EDIT_OBJECT.getText());
 
         ArrayList<KeyboardRow> keyBoardRows = new ArrayList<>();

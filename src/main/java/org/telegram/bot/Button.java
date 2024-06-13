@@ -1,14 +1,19 @@
 package org.telegram.bot;
 
-import lombok.Data;
-
-@Data
 public class Button {
-    String label;
-    String callBack;
+    private String label;
+    private String callBack;
 
-    public Button(String callBack, String label) {
-        this.callBack = callBack;
+    public Button(String label, String callBack) {
         this.label = label;
+        this.callBack = callBack;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getCallBack() {
+        return callBack;
     }
 }
