@@ -1,11 +1,6 @@
 package org.telegram.command;
 
-import org.telegram.command.impl.AddTraining;
-import org.telegram.command.impl.EditObject;
-import org.telegram.command.impl.HelpCommand;
-import org.telegram.command.impl.MyBookings;
-import org.telegram.command.impl.NewBooking;
-import org.telegram.command.impl.StartCommand;
+import org.telegram.command.impl.*;
 
 public enum CommandName {
     NEW_BOOKING("new_booking", NewBooking.class),

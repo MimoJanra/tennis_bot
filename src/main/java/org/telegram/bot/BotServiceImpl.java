@@ -13,7 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +93,8 @@ public class BotServiceImpl implements BotService {
         for (Button button : buttons) {
             List<InlineKeyboardButton> keyboardButtonRow = new ArrayList<>();
 
-            InlineKeyboardButton inlineButton = new InlineKeyboardButton(button.getLabel());
+            InlineKeyboardButton inlineButton = new InlineKeyboardButton();
+            inlineButton.setText(button.getLabel());
             inlineButton.setCallbackData(button.getCallBack());
             keyboardButtonRow.add(inlineButton);
             totalList.add(keyboardButtonRow);
