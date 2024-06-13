@@ -3,7 +3,7 @@ package org.telegram.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Data
@@ -15,8 +15,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime timeStart;
-    private LocalDateTime timeEnd;
+    private LocalDate date;
     private boolean isApproved;
 
     @ManyToOne
@@ -25,13 +24,12 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "booking_object_id")
-    private BookingObject bookingObject;
+    private BookingObject court;
 
     public String getFullText(boolean isAdmin) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy");
-        String text = bookingObject.getName() + "\n"
-                + timeStart.toLocalDate().format(dateFormatter) + "\n"
-                + timeStart.toLocalTime() + " - " + timeEnd.toLocalTime();
+        String text = court.getName() + "\n"
+                + date.format(dateFormatter);
         if (isAdmin) {
             text += "\n@" + user.getUsername();
         }
