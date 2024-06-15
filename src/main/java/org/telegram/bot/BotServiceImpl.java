@@ -59,22 +59,6 @@ public class BotServiceImpl implements BotService {
     }
 
     @Override
-    public void sendPhoto(SendPhoto sendPhoto, List<Button> buttons) {
-        sendPhoto.setReplyMarkup(inlineKeyboard(buttons));
-        try {
-            bot.execute(sendPhoto);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public String downloadPhoto(Update update) throws Exception {
-        // Реализуйте метод загрузки фото
-        return null;
-    }
-
-    @Override
     public void sendWithInlineKeyboard(Long chatId, String text, InlineKeyboardMarkup inlineKeyboard) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId.toString());

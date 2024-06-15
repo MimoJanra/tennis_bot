@@ -10,7 +10,6 @@ import org.telegram.command.Command;
 import org.telegram.command.CommandName;
 import org.telegram.models.Booking;
 import org.telegram.models.User;
-import org.telegram.service.BookingObjectService;
 import org.telegram.service.BookingService;
 import org.telegram.service.UserService;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -25,7 +24,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Component
 @Scope("prototype")
-public class NewBooking implements Command {
+public class Training implements Command {
 
     private enum Step {
         BEGIN,
@@ -72,7 +71,6 @@ public class NewBooking implements Command {
 
     private void begin(Update update) {
         long userId = UpdateUtil.getUserId(update);
-        List<Button> buttons = new ArrayList<>();
 
         Optional<User> userOpt = userService.findById(userId);
         booking = new Booking();

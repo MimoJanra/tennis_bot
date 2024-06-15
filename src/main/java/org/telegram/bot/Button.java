@@ -1,8 +1,8 @@
 package org.telegram.bot;
 
 public class Button {
-    private String label;
-    private String callBack;
+    private final String label;
+    private final String callBack;
 
     public Button(String label, String callBack) {
         this.label = label;

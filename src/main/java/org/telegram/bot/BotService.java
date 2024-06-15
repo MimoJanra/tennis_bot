@@ -11,7 +11,5 @@ public interface BotService {
     void sendText(Long chatId, String text);
     void sendWithKeyboard(Long chatId, String text, List<Button> buttons);
     void sendMarkup(Long chatId, String text, ReplyKeyboard markup);
-    void sendPhoto(SendPhoto sendPhoto, List<Button> buttons);
-    String downloadPhoto(Update update) throws Exception;
     void sendWithInlineKeyboard(Long chatId, String text, InlineKeyboardMarkup inlineKeyboard);
 }

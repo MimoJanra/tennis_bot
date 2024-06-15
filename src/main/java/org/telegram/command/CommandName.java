@@ -3,7 +3,7 @@ package org.telegram.command;
 import org.telegram.command.impl.*;
 
 public enum CommandName {
-    NEW_BOOKING("Тренировки", NewBooking.class, false),
+    NEW_BOOKING("Тренировки", Training.class, false),
     ADD_TRAINING("Добавить тренировку", AddTraining.class, true),
     EDIT_OBJECT("Изменить тренировку", EditObject.class, true),
     DELETE_OBJECT("Удалить тренировку", DeleteObject.class, true),
@@ -11,7 +11,7 @@ public enum CommandName {
     SUBSCRIPTION_STATS("Статистика абонементов", SubscriptionStats.class, true),
     START("/start", StartCommand.class, false),
     HELP("help", HelpCommand.class, false),
-    MY_BOOKINGS("Мои записи", MyBookings.class, false);
+    MY_BOOKINGS("Мои записи", MyTrainings.class, false);
 
     private final String text;
     private final Class<? extends Command> className;

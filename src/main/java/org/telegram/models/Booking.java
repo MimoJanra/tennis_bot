@@ -16,6 +16,13 @@ public class Booking {
     private Long id;
 
     private LocalDate date;
+    private int trainingHour;
+    private int trainingMinute;
+    private int duration;
+    private String location;
+    private String name;
+    private String description;
+    private boolean recurring;
     private boolean isApproved;
 
     @ManyToOne
@@ -29,7 +36,15 @@ public class Booking {
     public String getFullText(boolean isAdmin) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy");
         String text = court.getName() + "\n"
-                + date.format(dateFormatter);
+                + date.format(dateFormatter) + "\n"
+                + String.format("%02d:%02d", trainingHour, trainingMinute) + "\n"
+                + duration + " минут\n"
+                + location + "\n"
+                + name + "\n"
+                + description;
+        if (recurring) {
+            text += "\nТренировка будет повторяться раз в неделю";
+        }
         if (isAdmin) {
             text += "\n@" + user.getUsername();
         }

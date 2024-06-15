@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Data
 @Entity
@@ -18,7 +17,9 @@ public class BookingObject {
     private String name;
     private String description;
     private LocalDate date;
-    private LocalTime time;
+    private String trainingHour;
+    private String trainingMinute;
+    private int duration;
     private String location;
     private boolean recurring;
 

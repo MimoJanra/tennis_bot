@@ -14,7 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ import java.util.List;
 @Component
 @Scope("prototype")
 public class AddTraining implements Command {
-
     private static final String SELECT_DATE_PROMPT = "Выберите дату для тренировки:";
     private static final String SELECT_HOUR_PROMPT = "Выберите час для тренировки:";
     private static final String SELECT_MINUTE_PROMPT = "Выберите минуты для тренировки:";
@@ -52,8 +50,9 @@ public class AddTraining implements Command {
 
     private Step currentStep = Step.SELECT_DATE;
     private LocalDate selectedDate;
-    private int selectedHour;
-    private int selectedMinute;
+    private String selectedHour;
+    private String selectedMinute;
+    private int selectedDuration;
     private String selectedLocation;
     private String name;
     private String description;
@@ -86,20 +85,20 @@ public class AddTraining implements Command {
                     }
                     break;
                 case SELECT_HOUR:
-                    selectedHour = Integer.parseInt(input.trim());
+                    selectedHour = input;
                     System.out.println("Selected hour: " + selectedHour);
                     currentStep = Step.SELECT_MINUTE;
                     sendMinuteSelectionPrompt(userId);
                     break;
                 case SELECT_MINUTE:
-                    selectedMinute = Integer.parseInt(input.trim());
+                    selectedMinute = input;
                     System.out.println("Selected minute: " + selectedMinute);
                     currentStep = Step.SELECT_DURATION;
                     sendDurationSelectionPrompt(userId);
                     break;
                 case SELECT_DURATION:
-                    int durationMinutes = Integer.parseInt(input.trim());
-                    System.out.println("Selected duration: " + durationMinutes);
+                    selectedDuration = Integer.parseInt(input.trim());
+                    System.out.println("Selected duration: " + selectedDuration);
                     currentStep = Step.SELECT_LOCATION;
                     sendLocationSelectionPrompt(userId);
                     break;
@@ -132,7 +131,7 @@ public class AddTraining implements Command {
                     return true;
             }
         } catch (NumberFormatException e) {
-            botService.sendText(userId, "Ошибка при выборе времени. Пожалуйста, выберите час и минуты с помощью клавиатуры.");
+            botService.sendText(userId, "Неверный формат числа. Пожалуйста, введите корректное число.");
             System.err.println("Error: " + e.getMessage());
         } catch (Exception e) {
             botService.sendText(userId, ERROR_MESSAGE);
@@ -183,13 +182,13 @@ public class AddTraining implements Command {
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
         int startHour = 8;
-        int endHour = 22;
+        int endHour = 21;
 
         List<InlineKeyboardButton> row = new ArrayList<>();
         for (int hour = startHour; hour <= endHour; hour++) {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(String.format("%02d", hour));
-            button.setCallbackData(String.valueOf(hour));
+            button.setCallbackData(String.format("%02d", hour));
 
             row.add(button);
 
@@ -203,7 +202,6 @@ public class AddTraining implements Command {
         return keyboard;
     }
 
-
     private void sendMinuteSelectionPrompt(long userId) {
         InlineKeyboardMarkup keyboard = createMinuteSelectionKeyboard();
         botService.sendWithInlineKeyboard(userId, SELECT_MINUTE_PROMPT, keyboard);
@@ -216,7 +214,7 @@ public class AddTraining implements Command {
         for (int minute = 0; minute < 60; minute += 30) {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(String.format("%02d", minute));
-            button.setCallbackData(String.valueOf(minute));
+            button.setCallbackData(String.format("%02d", minute));
             List<InlineKeyboardButton> row = new ArrayList<>();
             row.add(button);
             rows.add(row);
@@ -290,12 +288,17 @@ public class AddTraining implements Command {
     private void saveTraining(long userId) {
         BookingObject bookingObject = new BookingObject();
         bookingObject.setDate(selectedDate);
-        bookingObject.setTime(LocalTime.of(selectedHour, selectedMinute));
+        bookingObject.setTrainingHour(selectedHour);
+        bookingObject.setTrainingMinute(selectedMinute);
         bookingObject.setLocation(selectedLocation);
         bookingObject.setName(name);
         bookingObject.setDescription(description);
         bookingObject.setRecurring(recurring);
+
+        System.out.println("BookingObject to be saved: " + bookingObject);
+
         bookingObjectService.save(bookingObject);
         botService.sendText(userId, CONFIRMATION_MESSAGE);
     }
+
 }

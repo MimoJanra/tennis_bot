@@ -39,6 +39,7 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText().trim();
             String chatId = update.getMessage().getChatId().toString();
+            System.out.println("Message received: " + messageText);
 
             if (commandContainer.hasCommand(messageText)) {
                 Command command = commandContainer.getCommand(messageText);
@@ -49,6 +50,7 @@ public class Bot extends TelegramLongPollingBot {
         } else if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();
             String chatId = update.getCallbackQuery().getMessage().getChatId().toString();
+            System.out.println("Callback data received: " + callbackData);
 
             Command command = commandContainer.getCallbackCommand(callbackData);
             if (command != null) {

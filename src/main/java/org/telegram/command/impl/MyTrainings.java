@@ -19,7 +19,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Component
 @Scope("prototype")
-public class MyBookings implements Command {
+public class MyTrainings implements Command {
 
     private enum Step {
         BEGIN,
