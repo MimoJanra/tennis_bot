@@ -46,6 +46,16 @@ public class Bot extends TelegramLongPollingBot {
             } else {
                 sendMessage(chatId, "Неизвестная команда");
             }
+        } else if (update.hasCallbackQuery()) {
+            String callbackData = update.getCallbackQuery().getData();
+            String chatId = update.getCallbackQuery().getMessage().getChatId().toString();
+
+            Command command = commandContainer.getCallbackCommand(callbackData);
+            if (command != null) {
+                command.execute(update, false);
+            } else {
+                sendMessage(chatId, "Неизвестная команда");
+            }
         }
     }
 

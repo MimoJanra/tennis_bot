@@ -1,39 +1,32 @@
 package org.telegram.bot;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.GetFile;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
-@Component
+@Service
 public class BotServiceImpl implements BotService {
-
     private final Bot bot;
 
-    @Value("${bot.images-dir}")
-    private String imagesDir;
+    public BotServiceImpl(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public void sendText(Long chatId, String text) {
-        SendMessage send = new SendMessage();
-        send.setChatId(chatId.toString());
-        send.setText(text);
-        send.setParseMode(ParseMode.MARKDOWN);
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId.toString());
+        message.setText(text);
         try {
-            bot.execute(send);
+            bot.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -41,12 +34,12 @@ public class BotServiceImpl implements BotService {
 
     @Override
     public void sendWithKeyboard(Long chatId, String text, List<Button> buttons) {
-        SendMessage send = new SendMessage();
-        send.setChatId(chatId.toString());
-        send.setText(text);
-        send.setReplyMarkup(inlineKeyboard(buttons));
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId.toString());
+        message.setText(text);
+        message.setReplyMarkup(inlineKeyboard(buttons));
         try {
-            bot.execute(send);
+            bot.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -54,13 +47,12 @@ public class BotServiceImpl implements BotService {
 
     @Override
     public void sendMarkup(Long chatId, String text, ReplyKeyboard markup) {
-        SendMessage send = new SendMessage();
-        send.setChatId(chatId.toString());
-        send.setText(text);
-        send.setParseMode(ParseMode.MARKDOWN);
-        send.setReplyMarkup(markup);
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId.toString());
+        message.setText(text);
+        message.setReplyMarkup(markup);
         try {
-            bot.execute(send);
+            bot.execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -69,8 +61,6 @@ public class BotServiceImpl implements BotService {
     @Override
     public void sendPhoto(SendPhoto sendPhoto, List<Button> buttons) {
         sendPhoto.setReplyMarkup(inlineKeyboard(buttons));
-        sendPhoto.setParseMode(ParseMode.MARKDOWN);
-
         try {
             bot.execute(sendPhoto);
         } catch (TelegramApiException e) {
@@ -79,29 +69,38 @@ public class BotServiceImpl implements BotService {
     }
 
     @Override
-    public String downloadPhoto(Update update) throws TelegramApiException {
-        String fileId = update.getMessage().getPhoto().get(2).getFileId();
-        String filePath = imagesDir + "/" + fileId + ".jpeg";
-        bot.downloadFile(bot.execute(new GetFile(fileId)), new File(filePath));
-        return filePath;
+    public String downloadPhoto(Update update) throws Exception {
+        // Реализуйте метод загрузки фото
+        return null;
+    }
+
+    @Override
+    public void sendWithInlineKeyboard(Long chatId, String text, InlineKeyboardMarkup inlineKeyboard) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId.toString());
+        message.setText(text);
+        message.setReplyMarkup(inlineKeyboard);
+        try {
+            bot.execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     private InlineKeyboardMarkup inlineKeyboard(List<Button> buttons) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> totalList = new ArrayList<>();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
         for (Button button : buttons) {
-            List<InlineKeyboardButton> keyboardButtonRow = new ArrayList<>();
-
+            List<InlineKeyboardButton> row = new ArrayList<>();
             InlineKeyboardButton inlineButton = new InlineKeyboardButton();
             inlineButton.setText(button.getLabel());
             inlineButton.setCallbackData(button.getCallBack());
-            keyboardButtonRow.add(inlineButton);
-            totalList.add(keyboardButtonRow);
+            row.add(inlineButton);
+            keyboard.add(row);
         }
-        inlineKeyboardMarkup.setKeyboard(totalList);
 
+        inlineKeyboardMarkup.setKeyboard(keyboard);
         return inlineKeyboardMarkup;
     }
-
 }

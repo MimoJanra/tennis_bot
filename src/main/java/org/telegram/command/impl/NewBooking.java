@@ -40,7 +40,6 @@ public class NewBooking implements Command {
     private static final String CONFIRMATION_TEXT = "Готово!\nЗаписались на %s\n%s";
 
     private final BotService botService;
-    private final BookingObjectService bookingObjectService;
     private final BookingService bookingService;
     private final UserService userService;
 

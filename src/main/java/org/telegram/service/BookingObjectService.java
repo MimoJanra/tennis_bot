@@ -36,4 +36,8 @@ public class BookingObjectService {
     public List<BookingObject> findByTypeId(String typeId) {
         return List.of();
     }
+
+    public void deleteById(long id) {
+        bookingObjectRepository.deleteById(id);
+    }
 }
