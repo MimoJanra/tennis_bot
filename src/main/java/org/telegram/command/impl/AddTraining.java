@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
 import org.telegram.command.Command;
+import org.telegram.command.CommandContainer;
 import org.telegram.command.CommandName;
 import org.telegram.models.BookingObject;
 import org.telegram.service.BookingObjectService;
@@ -20,8 +21,8 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-@Scope("prototype")
 public class AddTraining implements Command {
+    // Промпты для ввода
     private static final String SELECT_DATE_PROMPT = "Выберите дату для тренировки:";
     private static final String SELECT_HOUR_PROMPT = "Выберите час для тренировки:";
     private static final String SELECT_MINUTE_PROMPT = "Выберите минуты для тренировки:";
@@ -29,12 +30,15 @@ public class AddTraining implements Command {
     private static final String SELECT_LOCATION_PROMPT = "Введите место для тренировки:";
     private static final String ENTER_NAME_PROMPT = "Введите название тренировки:";
     private static final String ENTER_DESCRIPTION_PROMPT = "Введите описание тренировки:";
+    private static final String SELECT_PARTICIPANTS_PROMPT = "Выберите количество участников (от 2 до 6):";
+    private static final String ENTER_COST_PROMPT = "Введите стоимость тренировки:";
     private static final String RECURRING_PROMPT = "Тренировка будет повторяться раз в неделю?";
     private static final String CONFIRMATION_MESSAGE = "Тренировка успешно добавлена!";
     private static final String ERROR_MESSAGE = "Ошибка при добавлении тренировки.";
 
     private final BotService botService;
     private final BookingObjectService bookingObjectService;
+    private final CommandContainer commandContainer;
 
     private enum Step {
         SELECT_DATE,
@@ -44,6 +48,8 @@ public class AddTraining implements Command {
         SELECT_LOCATION,
         ENTER_NAME,
         ENTER_DESCRIPTION,
+        SELECT_PARTICIPANTS,
+        ENTER_COST,
         SELECT_RECURRING,
         CONFIRM
     }
@@ -56,6 +62,8 @@ public class AddTraining implements Command {
     private String selectedLocation;
     private String name;
     private String description;
+    private int participants;
+    private double cost;
     private boolean recurring;
 
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -117,6 +125,18 @@ public class AddTraining implements Command {
                 case ENTER_DESCRIPTION:
                     description = input;
                     System.out.println("Entered description: " + description);
+                    currentStep = Step.SELECT_PARTICIPANTS;
+                    sendParticipantsPrompt(userId);
+                    break;
+                case SELECT_PARTICIPANTS:
+                    participants = Integer.parseInt(input.trim());
+                    System.out.println("Selected participants: " + participants);
+                    currentStep = Step.ENTER_COST;
+                    sendCostPrompt(userId);
+                    break;
+                case ENTER_COST:
+                    cost = Double.parseDouble(input.trim());
+                    System.out.println("Entered cost: " + cost);
                     currentStep = Step.SELECT_RECURRING;
                     sendRecurringPrompt(userId);
                     break;
@@ -259,6 +279,32 @@ public class AddTraining implements Command {
         botService.sendText(userId, ENTER_DESCRIPTION_PROMPT);
     }
 
+    private void sendParticipantsPrompt(long userId) {
+        InlineKeyboardMarkup keyboard = createParticipantsSelectionKeyboard();
+        botService.sendWithInlineKeyboard(userId, SELECT_PARTICIPANTS_PROMPT, keyboard);
+    }
+
+    private InlineKeyboardMarkup createParticipantsSelectionKeyboard() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
+        for (int i = 2; i <= 6; i++) {
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(String.valueOf(i));
+            button.setCallbackData(String.valueOf(i));
+            List<InlineKeyboardButton> row = new ArrayList<>();
+            row.add(button);
+            rows.add(row);
+        }
+
+        inlineKeyboardMarkup.setKeyboard(rows);
+        return inlineKeyboardMarkup;
+    }
+
+    private void sendCostPrompt(long userId) {
+        botService.sendText(userId, ENTER_COST_PROMPT);
+    }
+
     private void sendRecurringPrompt(long userId) {
         InlineKeyboardMarkup keyboard = createRecurringSelectionKeyboard();
         botService.sendWithInlineKeyboard(userId, RECURRING_PROMPT, keyboard);
@@ -290,15 +336,18 @@ public class AddTraining implements Command {
         bookingObject.setDate(selectedDate);
         bookingObject.setTrainingHour(selectedHour);
         bookingObject.setTrainingMinute(selectedMinute);
+        bookingObject.setDuration(selectedDuration);
         bookingObject.setLocation(selectedLocation);
         bookingObject.setName(name);
         bookingObject.setDescription(description);
         bookingObject.setRecurring(recurring);
+        bookingObject.setParticipants(participants);
+        bookingObject.setCost(cost);
 
         System.out.println("BookingObject to be saved: " + bookingObject);
 
         bookingObjectService.save(bookingObject);
         botService.sendText(userId, CONFIRMATION_MESSAGE);
+        commandContainer.clearActiveCommand(String.valueOf(userId));
     }
-
 }

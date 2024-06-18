@@ -12,6 +12,7 @@ public class CommandContainer {
 
     private final ApplicationContext context;
     private final Map<String, Class<? extends Command>> commandClasses = new HashMap<>();
+    private final Map<String, Command> activeCommands = new HashMap<>();
 
     public CommandContainer(ApplicationContext context) {
         this.context = context;
@@ -35,5 +36,17 @@ public class CommandContainer {
 
     public Command getCallbackCommand(String callbackData) {
         return context.getBean(AddTraining.class);
+    }
+
+    public Command getActiveCommand(String chatId) {
+        return activeCommands.get(chatId);
+    }
+
+    public void setActiveCommand(String chatId, Command command) {
+        activeCommands.put(chatId, command);
+    }
+
+    public void clearActiveCommand(String chatId) {
+        activeCommands.remove(chatId);
     }
 }

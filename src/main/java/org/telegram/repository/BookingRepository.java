@@ -11,6 +11,6 @@ import java.util.List;
 public interface BookingRepository extends CrudRepository<Booking, Long> {
     @Nonnull
     List<Booking> findAll();
-    List<Booking> findByDateAndCourt(LocalDate date, BookingObject court);
+    List<Booking> findByDateAndBookingObject(LocalDate date, BookingObject bookingObject);
     List<Booking> findByUserId(long userId);
 }

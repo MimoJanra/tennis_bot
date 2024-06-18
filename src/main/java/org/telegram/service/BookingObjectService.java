@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.telegram.models.BookingObject;
 import org.telegram.repository.BookingObjectRepository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -29,15 +31,17 @@ public class BookingObjectService {
         bookingObjectRepository.delete(bookingObject);
     }
 
-    public BookingObject findById(String id) {
-        return bookingObjectRepository.findById(Long.parseLong(id)).orElse(null);
-    }
-
-    public List<BookingObject> findByTypeId(String typeId) {
-        return List.of();
-    }
-
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         bookingObjectRepository.deleteById(id);
+    }
+
+    public Optional<BookingObject> findById(Long id) {
+        return bookingObjectRepository.findById(id);
+    }
+
+    public List<BookingObject> findAvailableByDate(LocalDate date) {
+        return bookingObjectRepository.findByDate(date).stream()
+                .filter(bo -> bo.getAvailableSlots() > 0)
+                .collect(Collectors.toList());
     }
 }

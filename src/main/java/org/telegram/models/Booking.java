@@ -31,11 +31,11 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "booking_object_id")
-    private BookingObject court;
+    private BookingObject bookingObject;
 
     public String getFullText(boolean isAdmin) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy");
-        String text = court.getName() + "\n"
+        String text = bookingObject.getName() + "\n"
                 + date.format(dateFormatter) + "\n"
                 + String.format("%02d:%02d", trainingHour, trainingMinute) + "\n"
                 + duration + " минут\n"

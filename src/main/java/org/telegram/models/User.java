@@ -18,4 +18,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Booking> bookings;
+
+    public String getName() {
+        return username;
+    }
 }

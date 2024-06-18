@@ -11,8 +11,6 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @RequiredArgsConstructor
 @Component
 public class Runner {
-
-    private final Bot bot;
     private boolean isBotRegistered = false;
 
     @EventListener(ApplicationReadyEvent.class)
@@ -22,7 +20,6 @@ public class Runner {
             System.out.println("Registering bot...");
             try {
                 TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-                botsApi.registerBot(bot);
                 isBotRegistered = true;
                 System.out.println("Bot registered successfully.");
             } catch (TelegramApiException e) {

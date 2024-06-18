@@ -28,8 +28,8 @@ public class BookingService {
         return bookingRepository.findById(Long.parseLong(id));
     }
 
-    public List<Booking> findByDateAndCourt(LocalDate date, BookingObject court) {
-        return bookingRepository.findByDateAndCourt(date, court);
+    public List<Booking> findByDateAndCourt(LocalDate date, BookingObject bookingObject) {
+        return bookingRepository.findByDateAndBookingObject(date, bookingObject);
     }
 
     public List<Booking> findByUserId(long userId) {

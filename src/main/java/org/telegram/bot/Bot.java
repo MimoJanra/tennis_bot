@@ -41,8 +41,12 @@ public class Bot extends TelegramLongPollingBot {
             String chatId = update.getMessage().getChatId().toString();
             System.out.println("Message received: " + messageText);
 
-            if (commandContainer.hasCommand(messageText)) {
+            Command activeCommand = commandContainer.getActiveCommand(chatId);
+            if (activeCommand != null) {
+                activeCommand.execute(update, false);
+            } else if (commandContainer.hasCommand(messageText)) {
                 Command command = commandContainer.getCommand(messageText);
+                commandContainer.setActiveCommand(chatId, command);
                 command.execute(update, true);
             } else {
                 sendMessage(chatId, "Неизвестная команда");

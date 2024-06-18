@@ -22,8 +22,17 @@ public class BookingObject {
     private int duration;
     private String location;
     private boolean recurring;
+    private int participants;
+    private double cost;
+    private int availableSlots;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void bookSlot() {
+        if (availableSlots > 0) {
+            availableSlots--;
+        }
+    }
 }

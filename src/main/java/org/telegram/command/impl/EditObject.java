@@ -78,11 +78,18 @@ public class EditObject implements Command {
     }
 
     private void selectObject(long userId, String input) {
-        Optional<BookingObject> objectOpt = Optional.ofNullable(bookingObjectService.findById(input));
-        if (objectOpt.isPresent()) {
-            bookingObject = objectOpt.get();
-            botService.sendWithKeyboard(userId, SELECT_ACTION, getActionsButtons());
-            usersSteps.put(userId, Step.SELECT_ACTION);
+        try {
+            Long objectId = Long.parseLong(input);
+            Optional<BookingObject> objectOpt = bookingObjectService.findById(objectId);
+            if (objectOpt.isPresent()) {
+                bookingObject = objectOpt.get();
+                botService.sendWithKeyboard(userId, SELECT_ACTION, getActionsButtons());
+                usersSteps.put(userId, Step.SELECT_ACTION);
+            } else {
+                botService.sendText(userId, "Объект не найден.");
+            }
+        } catch (NumberFormatException e) {
+            botService.sendText(userId, "Неверный формат ID объекта.");
         }
     }
 
@@ -95,7 +102,6 @@ public class EditObject implements Command {
                 case DELETE -> botService.sendWithKeyboard(userId,
                         String.format(CONFIRM_DELETING, bookingObject.getName()), getConfirmButtons());
             }
-
             usersSteps.put(userId, step);
         } catch (IllegalArgumentException ignored) {}
     }
@@ -141,9 +147,8 @@ public class EditObject implements Command {
 
     private List<Button> getConfirmButtons() {
         return List.of(
-                new Button(String.valueOf(bookingObject.getId()), DELETE),
+                new Button("confirm_delete", DELETE),
                 new Button(CANCEL, CANCEL)
         );
     }
-
 }

@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -87,8 +88,9 @@ public class DeleteObject implements Command {
     }
 
     private void sendDeleteConfirmation(long userId, long trainingId) {
-        BookingObject training = bookingObjectService.findById(String.valueOf(trainingId));
-        if (training != null) {
+        Optional<BookingObject> trainingOpt = bookingObjectService.findById(trainingId);
+        if (trainingOpt.isPresent()) {
+            BookingObject training = trainingOpt.get();
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
             List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
@@ -108,6 +110,8 @@ public class DeleteObject implements Command {
             inlineKeyboardMarkup.setKeyboard(keyboard);
 
             botService.sendWithInlineKeyboard(userId, "Вы уверены, что хотите удалить " + training.getName() + "?", inlineKeyboardMarkup);
+        } else {
+            botService.sendText(userId, ERROR_MESSAGE);
         }
     }
 }
