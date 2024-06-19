@@ -95,6 +95,7 @@ public class Training implements Command {
     private void selectDate(Long userId, String input) {
         try {
             selectedDate = LocalDate.parse(input, DateTimeFormatter.ISO_LOCAL_DATE);
+            System.out.println("Selected date: " + selectedDate);
         } catch (DateTimeParseException e) {
             botService.sendText(userId, "Некорректная дата. Пожалуйста, выберите дату на клавиатуре.");
             return;
@@ -104,6 +105,7 @@ public class Training implements Command {
             botService.sendText(userId, INCORRECT_DAY);
         } else {
             List<TrainingObject> availableTrainings = trainingObjectService.findAvailableByDate(selectedDate);
+            System.out.println("Available trainings: " + availableTrainings);
             if (availableTrainings.isEmpty()) {
                 botService.sendText(userId, "На выбранную дату нет доступных тренировок.");
             } else {

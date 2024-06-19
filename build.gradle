@@ -28,3 +28,20 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaExec) {
+    environment "LANG", "en_US.UTF-8"
+    environment "LC_ALL", "en_US.UTF-8"
+}
+
+bootRun {
+    jvmArgs = ['-Dfile.encoding=UTF-8']
+}

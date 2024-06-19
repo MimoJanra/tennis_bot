@@ -12,7 +12,7 @@ public enum CommandName {
     START("/start", StartCommand.class, false),
     HELP("help", HelpCommand.class, false),
     MY_BOOKINGS("Мои записи", MyTrainings.class, false),
-    CANCEL("Отмена", CancelCommand.class, false); // Новая команда для отмены
+    CANCEL("Отмена", CancelCommand.class, false);
 
     private final String text;
     private final Class<? extends Command> className;

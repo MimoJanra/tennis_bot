@@ -3,6 +3,7 @@ package org.telegram.command;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.telegram.command.impl.AddTraining;
+import org.telegram.command.impl.CancelCommand;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +35,11 @@ public class CommandContainer {
         return commandClasses.containsKey(name);
     }
 
-    public Command getCallbackCommand(String callbackData) {
-        return context.getBean(AddTraining.class);
+    public Command getCallbackCommand(String callbackData, String chatId) {
+        if ("CANCEL".equalsIgnoreCase(callbackData)) {
+            return context.getBean(CancelCommand.class);
+        }
+        return getActiveCommand(chatId);
     }
 
     public Command getActiveCommand(String chatId) {

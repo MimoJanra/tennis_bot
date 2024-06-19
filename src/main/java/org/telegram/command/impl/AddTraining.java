@@ -34,6 +34,7 @@ public class AddTraining implements Command {
     private static final String RECURRING_PROMPT = "Тренировка будет повторяться раз в неделю?";
     private static final String CONFIRMATION_MESSAGE = "Тренировка успешно добавлена!";
     private static final String ERROR_MESSAGE = "Ошибка при добавлении тренировки.";
+    private static final String CANCEL_MESSAGE = "Операция отменена.";
 
     private final BotService botService;
     private final TrainingObjectService trainingObjectService;
@@ -72,12 +73,14 @@ public class AddTraining implements Command {
         long userId = UpdateUtil.getUserId(update);
         String input = UpdateUtil.getInput(update);
 
+        if (input.equalsIgnoreCase("Отмена") || input.equalsIgnoreCase("CANCEL")) {
+            cancelOperation(userId);
+            return true;
+        }
+
         try {
             if (update.hasCallbackQuery()) {
                 input = update.getCallbackQuery().getData();
-                System.out.println("Callback data received: " + input);
-            } else {
-                System.out.println("Text input received: " + input);
             }
 
             switch (currentStep) {
@@ -86,62 +89,52 @@ public class AddTraining implements Command {
                         sendDateSelectionPrompt(userId);
                     } else {
                         selectedDate = LocalDate.parse(input, dateFormatter);
-                        System.out.println("Selected date: " + selectedDate);
                         currentStep = Step.SELECT_HOUR;
                         sendHourSelectionPrompt(userId);
                     }
                     break;
                 case SELECT_HOUR:
                     selectedHour = input;
-                    System.out.println("Selected hour: " + selectedHour);
                     currentStep = Step.SELECT_MINUTE;
                     sendMinuteSelectionPrompt(userId);
                     break;
                 case SELECT_MINUTE:
                     selectedMinute = input;
-                    System.out.println("Selected minute: " + selectedMinute);
                     currentStep = Step.SELECT_DURATION;
                     sendDurationSelectionPrompt(userId);
                     break;
                 case SELECT_DURATION:
                     selectedDuration = Integer.parseInt(input.trim());
-                    System.out.println("Selected duration: " + selectedDuration);
                     currentStep = Step.SELECT_LOCATION;
                     sendLocationSelectionPrompt(userId);
                     break;
                 case SELECT_LOCATION:
                     selectedLocation = input;
-                    System.out.println("Selected location: " + selectedLocation);
                     currentStep = Step.ENTER_NAME;
                     sendNamePrompt(userId);
                     break;
                 case ENTER_NAME:
                     name = input;
-                    System.out.println("Entered name: " + name);
                     currentStep = Step.ENTER_DESCRIPTION;
                     sendDescriptionPrompt(userId);
                     break;
                 case ENTER_DESCRIPTION:
                     description = input;
-                    System.out.println("Entered description: " + description);
                     currentStep = Step.SELECT_PARTICIPANTS;
                     sendParticipantsPrompt(userId);
                     break;
                 case SELECT_PARTICIPANTS:
                     participants = Integer.parseInt(input.trim());
-                    System.out.println("Selected participants: " + participants);
                     currentStep = Step.ENTER_COST;
                     sendCostPrompt(userId);
                     break;
                 case ENTER_COST:
                     cost = Double.parseDouble(input.trim());
-                    System.out.println("Entered cost: " + cost);
                     currentStep = Step.SELECT_RECURRING;
                     sendRecurringPrompt(userId);
                     break;
                 case SELECT_RECURRING:
                     recurring = input.equalsIgnoreCase("yes");
-                    System.out.println("Recurring: " + recurring);
                     currentStep = Step.CONFIRM;
                     saveTraining(userId);
                     break;
@@ -151,10 +144,8 @@ public class AddTraining implements Command {
             }
         } catch (NumberFormatException e) {
             botService.sendText(userId, "Неверный формат числа. Пожалуйста, введите корректное число.");
-            System.err.println("Error: " + e.getMessage());
         } catch (Exception e) {
             botService.sendText(userId, ERROR_MESSAGE);
-            System.err.println("Error: " + e.getMessage());
         }
         return false;
     }
@@ -187,6 +178,7 @@ public class AddTraining implements Command {
             }
             totalList.add(keyboardButtonRow);
         }
+        addCancelButton(totalList);
         inlineKeyboardMarkup.setKeyboard(totalList);
         return inlineKeyboardMarkup;
     }
@@ -217,6 +209,7 @@ public class AddTraining implements Command {
             }
         }
 
+        addCancelButton(rows);
         keyboard.setKeyboard(rows);
         return keyboard;
     }
@@ -239,6 +232,7 @@ public class AddTraining implements Command {
             rows.add(row);
         }
 
+        addCancelButton(rows);
         keyboard.setKeyboard(rows);
         return keyboard;
     }
@@ -262,20 +256,27 @@ public class AddTraining implements Command {
             rows.add(row);
         }
 
+        addCancelButton(rows);
         inlineKeyboardMarkup.setKeyboard(rows);
         return inlineKeyboardMarkup;
     }
 
     private void sendLocationSelectionPrompt(long userId) {
+        InlineKeyboardMarkup keyboard = createCancelKeyboard(userId);
         botService.sendText(userId, SELECT_LOCATION_PROMPT);
+        botService.sendWithInlineKeyboard(userId, "Для отмены нажмите кнопку 'Отмена'.", keyboard);
     }
 
     private void sendNamePrompt(long userId) {
+        InlineKeyboardMarkup keyboard = createCancelKeyboard(userId);
         botService.sendText(userId, ENTER_NAME_PROMPT);
+        botService.sendWithInlineKeyboard(userId, "Для отмены нажмите кнопку 'Отмена'.", keyboard);
     }
 
     private void sendDescriptionPrompt(long userId) {
+        InlineKeyboardMarkup keyboard = createCancelKeyboard(userId);
         botService.sendText(userId, ENTER_DESCRIPTION_PROMPT);
+        botService.sendWithInlineKeyboard(userId, "Для отмены нажмите кнопку 'Отмена'.", keyboard);
     }
 
     private void sendParticipantsPrompt(long userId) {
@@ -296,12 +297,15 @@ public class AddTraining implements Command {
             rows.add(row);
         }
 
+        addCancelButton(rows);
         inlineKeyboardMarkup.setKeyboard(rows);
         return inlineKeyboardMarkup;
     }
 
     private void sendCostPrompt(long userId) {
+        InlineKeyboardMarkup keyboard = createCancelKeyboard(userId);
         botService.sendText(userId, ENTER_COST_PROMPT);
+        botService.sendWithInlineKeyboard(userId, "Для отмены нажмите кнопку 'Отмена'.", keyboard);
     }
 
     private void sendRecurringPrompt(long userId) {
@@ -326,6 +330,7 @@ public class AddTraining implements Command {
         row.add(noButton);
 
         rows.add(row);
+        addCancelButton(rows);
         keyboard.setKeyboard(rows);
         return keyboard;
     }
@@ -343,10 +348,31 @@ public class AddTraining implements Command {
         trainingObject.setParticipants(participants);
         trainingObject.setCost(cost);
 
-        System.out.println("BookingObject to be saved: " + trainingObject);
-
         trainingObjectService.save(trainingObject);
         botService.sendText(userId, CONFIRMATION_MESSAGE);
         commandContainer.clearActiveCommand(String.valueOf(userId));
+    }
+
+    private void cancelOperation(long userId) {
+        botService.sendText(userId, CANCEL_MESSAGE);
+        commandContainer.clearActiveCommand(String.valueOf(userId));
+    }
+
+    private void addCancelButton(List<List<InlineKeyboardButton>> rows) {
+        InlineKeyboardButton cancelButton = new InlineKeyboardButton();
+        cancelButton.setText("Отмена");
+        cancelButton.setCallbackData("CANCEL");
+
+        List<InlineKeyboardButton> cancelRow = new ArrayList<>();
+        cancelRow.add(cancelButton);
+        rows.add(cancelRow);
+    }
+
+    private InlineKeyboardMarkup createCancelKeyboard(long userId) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        addCancelButton(rows);
+        inlineKeyboardMarkup.setKeyboard(rows);
+        return inlineKeyboardMarkup;
     }
 }
