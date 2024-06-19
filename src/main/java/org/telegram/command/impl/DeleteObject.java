@@ -1,7 +1,6 @@
 package org.telegram.command.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
-@Scope("prototype")
 public class DeleteObject implements Command {
 
     private static final String DELETE_PROMPT = "Выберите тренировку для удаления:";

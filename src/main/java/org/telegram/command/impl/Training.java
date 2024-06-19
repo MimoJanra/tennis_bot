@@ -2,7 +2,6 @@ package org.telegram.command.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
@@ -24,7 +23,6 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Component
-@Scope("prototype")
 public class Training implements Command {
 
     private enum Step {
@@ -96,20 +94,22 @@ public class Training implements Command {
 
     private void selectDate(Long userId, String input) {
         try {
-            selectedDate = LocalDate.parse(input, dateFormatter);
-            if (selectedDate.isBefore(LocalDate.now())) {
-                botService.sendText(userId, INCORRECT_DAY);
-            } else {
-                List<TrainingObject> availableTrainings = trainingObjectService.findAvailableByDate(selectedDate);
-                if (availableTrainings.isEmpty()) {
-                    botService.sendText(userId, "На выбранную дату нет доступных тренировок.");
-                } else {
-                    botService.sendMarkup(userId, SELECT_TRAINING, makeTrainingsList(availableTrainings));
-                    usersSteps.put(userId, Step.SELECT_TRAINING);
-                }
-            }
+            selectedDate = LocalDate.parse(input, DateTimeFormatter.ISO_LOCAL_DATE);
         } catch (DateTimeParseException e) {
+            botService.sendText(userId, "Некорректная дата. Пожалуйста, выберите дату на клавиатуре.");
+            return;
+        }
+
+        if (selectedDate.isBefore(LocalDate.now())) {
             botService.sendText(userId, INCORRECT_DAY);
+        } else {
+            List<TrainingObject> availableTrainings = trainingObjectService.findAvailableByDate(selectedDate);
+            if (availableTrainings.isEmpty()) {
+                botService.sendText(userId, "На выбранную дату нет доступных тренировок.");
+            } else {
+                botService.sendMarkup(userId, SELECT_TRAINING, makeTrainingsList(availableTrainings));
+                usersSteps.put(userId, Step.SELECT_TRAINING);
+            }
         }
     }
 
@@ -199,12 +199,21 @@ public class Training implements Command {
             for (int calendarColumn = 0; calendarColumn < 7; calendarColumn++) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(day.isBefore(today) ? "X" : String.valueOf(day.getDayOfMonth()));
-                button.setCallbackData(day.format(dateFormatter));
+                button.setCallbackData(day.format(DateTimeFormatter.ISO_LOCAL_DATE));
                 keyboardButtonRow.add(button);
                 day = day.plusDays(1);
             }
             totalList.add(keyboardButtonRow);
         }
+
+        InlineKeyboardButton cancelButton = new InlineKeyboardButton();
+        cancelButton.setText("Отмена");
+        cancelButton.setCallbackData("CANCEL");
+
+        List<InlineKeyboardButton> cancelRow = new ArrayList<>();
+        cancelRow.add(cancelButton);
+        totalList.add(cancelRow);
+
         inlineKeyboardMarkup.setKeyboard(totalList);
         return inlineKeyboardMarkup;
     }

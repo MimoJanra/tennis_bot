@@ -1,24 +1,25 @@
 package org.telegram.command.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.telegram.models.Training;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.bot.BotService;
 import org.telegram.bot.Button;
 import org.telegram.bot.UpdateUtil;
 import org.telegram.command.Command;
 import org.telegram.command.CommandName;
+import org.telegram.models.Training;
 import org.telegram.models.User;
 import org.telegram.service.TrainingService;
 import org.telegram.service.UserService;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-@Scope("prototype")
 public class MyTrainings implements Command {
 
     private enum Step {

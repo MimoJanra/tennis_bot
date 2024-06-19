@@ -1,9 +1,7 @@
 package org.telegram.command.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.bot.BotService;
 import org.telegram.bot.Button;
 import org.telegram.bot.UpdateUtil;
@@ -11,12 +9,12 @@ import org.telegram.command.Command;
 import org.telegram.command.CommandName;
 import org.telegram.models.TrainingObject;
 import org.telegram.service.TrainingObjectService;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.*;
 
 @RequiredArgsConstructor
 @Component
-@Scope("prototype")
 public class EditObject implements Command {
 
     private enum Step {

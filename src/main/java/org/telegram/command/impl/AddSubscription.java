@@ -1,7 +1,6 @@
 package org.telegram.command.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
@@ -12,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RequiredArgsConstructor
 @Component
-@Scope("prototype")
 public class AddSubscription implements Command {
 
     private static final String ADD_MESSAGE = "Введите данные для добавления абонемента:";

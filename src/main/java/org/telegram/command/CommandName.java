@@ -11,7 +11,8 @@ public enum CommandName {
     SUBSCRIPTION_STATS("Статистика абонементов", SubscriptionStats.class, true),
     START("/start", StartCommand.class, false),
     HELP("help", HelpCommand.class, false),
-    MY_BOOKINGS("Мои записи", MyTrainings.class, false);
+    MY_BOOKINGS("Мои записи", MyTrainings.class, false),
+    CANCEL("Отмена", CancelCommand.class, false); // Новая команда для отмены
 
     private final String text;
     private final Class<? extends Command> className;

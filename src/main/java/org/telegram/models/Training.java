@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 @Data
 @Entity
-@Table(name = "bookings")
+@Table(name = "trainings")
 public class Training {
 
     @Id
@@ -30,7 +30,7 @@ public class Training {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "booking_object_id")
+    @JoinColumn(name = "training_object_id")
     private TrainingObject trainingObject;
 
     public String getFullText(boolean isAdmin) {

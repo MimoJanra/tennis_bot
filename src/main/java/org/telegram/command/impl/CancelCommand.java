@@ -1,34 +1,32 @@
 package org.telegram.command.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
 import org.telegram.command.Command;
+import org.telegram.command.CommandContainer;
 import org.telegram.command.CommandName;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RequiredArgsConstructor
 @Component
-public class HelpCommand implements Command {
-
-    private static final String HELP_MESSAGE = "Список доступных команд:\n" +
-            "/start - Начало работы\n" +
-            "/help - Список команд\n" +
-            "/new_booking - Записаться на тренировку\n" +
-            "/add_training - Добавить тренировку";
+public class CancelCommand implements Command {
 
     private final BotService botService;
+    private final CommandContainer commandContainer;
 
     @Override
     public boolean execute(Update update, boolean isBeginning) {
-        long userId = UpdateUtil.getUserId(update);
-        botService.sendText(userId, HELP_MESSAGE);
+        Long userId = UpdateUtil.getUserId(update);
+        commandContainer.clearActiveCommand(userId.toString());
+        botService.sendText(userId, "Вы вышли из текущей команды.");
         return true;
     }
 
     @Override
     public CommandName getName() {
-        return CommandName.HELP;
+        return CommandName.CANCEL;
     }
 }

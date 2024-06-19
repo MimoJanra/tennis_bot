@@ -2,7 +2,6 @@ package org.telegram.command.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
@@ -19,7 +18,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-@Scope("prototype")
 public class StartCommand implements Command {
 
     private static final String START_MESSAGE = "Добро пожаловать! Используйте /help для получения списка доступных команд.";

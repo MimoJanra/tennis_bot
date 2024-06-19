@@ -28,8 +28,8 @@ public class TrainingService {
         return trainingRepository.findById(Long.parseLong(id));
     }
 
-    public List<Training> findByDateAndCourt(LocalDate date, TrainingObject trainingObject) {
-        return trainingRepository.findByDateAndBookingObject(date, trainingObject);
+    public List<Training> findByDateAndTrainingObject(LocalDate date, TrainingObject trainingObject) {
+        return trainingRepository.findByDateAndTrainingObject(date, trainingObject);
     }
 
     public List<Training> findByUserId(long userId) {
