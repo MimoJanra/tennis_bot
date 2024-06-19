@@ -8,11 +8,10 @@ import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
 import org.telegram.command.Command;
 import org.telegram.command.CommandName;
-import org.telegram.models.Booking;
-import org.telegram.models.BookingObject;
+import org.telegram.models.TrainingObject;
 import org.telegram.models.User;
-import org.telegram.service.BookingObjectService;
-import org.telegram.service.BookingService;
+import org.telegram.service.TrainingObjectService;
+import org.telegram.service.TrainingService;
 import org.telegram.service.UserService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -49,14 +48,14 @@ public class Training implements Command {
     private static final String APPROVAL_TEXT = "Ваша запись на тренировку %s в %s была подтверждена.";
 
     private final BotService botService;
-    private final BookingService bookingService;
-    private final BookingObjectService bookingObjectService;
+    private final TrainingService trainingService;
+    private final TrainingObjectService trainingObjectService;
     private final UserService userService;
 
     private final Map<Long, Step> usersSteps = new HashMap<>();
     private final Map<Long, Long> pendingApprovals = new HashMap<>();
     private boolean isFinished;
-    private Booking booking;
+    private org.telegram.models.Training training;
     private LocalDate selectedDate;
 
     @Override
@@ -88,8 +87,8 @@ public class Training implements Command {
         long userId = UpdateUtil.getUserId(update);
 
         Optional<User> userOpt = userService.findById(userId);
-        booking = new Booking();
-        booking.setUser(userOpt.orElseGet(() -> userService.create(update)));
+        training = new org.telegram.models.Training();
+        training.setUser(userOpt.orElseGet(() -> userService.create(update)));
 
         botService.sendMarkup(userId, SELECT_DATE, makeCalendar());
         usersSteps.put(userId, Step.SELECT_DATE);
@@ -101,7 +100,7 @@ public class Training implements Command {
             if (selectedDate.isBefore(LocalDate.now())) {
                 botService.sendText(userId, INCORRECT_DAY);
             } else {
-                List<BookingObject> availableTrainings = bookingObjectService.findAvailableByDate(selectedDate);
+                List<TrainingObject> availableTrainings = trainingObjectService.findAvailableByDate(selectedDate);
                 if (availableTrainings.isEmpty()) {
                     botService.sendText(userId, "На выбранную дату нет доступных тренировок.");
                 } else {
@@ -117,15 +116,15 @@ public class Training implements Command {
     private void selectTraining(Long userId, String input) {
         try {
             Long trainingId = Long.parseLong(input);
-            Optional<BookingObject> trainingOpt = bookingObjectService.findById(trainingId);
+            Optional<TrainingObject> trainingOpt = trainingObjectService.findById(trainingId);
             if (trainingOpt.isPresent()) {
-                BookingObject training = trainingOpt.get();
+                TrainingObject training = trainingOpt.get();
                 training.bookSlot();
-                bookingObjectService.save(training);
+                trainingObjectService.save(training);
 
-                booking.setBookingObject(training);
-                booking.setDate(selectedDate);
-                bookingService.save(booking);
+                this.training.setTrainingObject(training);
+                this.training.setDate(selectedDate);
+                trainingService.save(this.training);
 
                 usersSteps.put(userId, Step.ADMIN_CONFIRMATION);
                 adminConfirmation(userId);
@@ -138,9 +137,9 @@ public class Training implements Command {
     }
 
     private void adminConfirmation(Long userId) {
-        BookingObject training = booking.getBookingObject();
+        TrainingObject training = this.training.getTrainingObject();
         String adminText = String.format(ADMIN_CONFIRMATION_TEXT,
-                booking.getUser().getName(), training.getName(), training.getLocation());
+                this.training.getUser().getName(), training.getName(), training.getLocation());
 
         Long adminUserId = userService.findByUsername(adminUsername).map(User::getId).orElse(null);
         if (adminUserId != null) {
@@ -173,7 +172,7 @@ public class Training implements Command {
     }
 
     private void confirmation(Long userId) {
-        BookingObject training = booking.getBookingObject();
+        TrainingObject training = this.training.getTrainingObject();
         String confirmationText = String.format(CONFIRMATION_TEXT,
                 training.getName(), training.getLocation());
         botService.sendText(userId, confirmationText);
@@ -210,11 +209,11 @@ public class Training implements Command {
         return inlineKeyboardMarkup;
     }
 
-    private InlineKeyboardMarkup makeTrainingsList(List<BookingObject> trainings) {
+    private InlineKeyboardMarkup makeTrainingsList(List<TrainingObject> trainings) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
-        for (BookingObject training : trainings) {
+        for (TrainingObject training : trainings) {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(training.getName() + " (" + training.getAvailableSlots() + " мест)");
             button.setCallbackData(training.getId().toString());

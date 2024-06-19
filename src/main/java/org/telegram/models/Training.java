@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 @Data
 @Entity
 @Table(name = "bookings")
-public class Booking {
+public class Training {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,11 +31,11 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "booking_object_id")
-    private BookingObject bookingObject;
+    private TrainingObject trainingObject;
 
     public String getFullText(boolean isAdmin) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy");
-        String text = bookingObject.getName() + "\n"
+        String text = trainingObject.getName() + "\n"
                 + date.format(dateFormatter) + "\n"
                 + String.format("%02d:%02d", trainingHour, trainingMinute) + "\n"
                 + duration + " минут\n"

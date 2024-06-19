@@ -17,7 +17,7 @@ public class User {
     private boolean isAdmin;
 
     @OneToMany(mappedBy = "user")
-    private List<Booking> bookings;
+    private List<Training> trainings;
 
     public String getName() {
         return username;

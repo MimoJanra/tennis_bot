@@ -1,15 +1,14 @@
 package org.telegram.command.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
 import org.telegram.command.Command;
 import org.telegram.command.CommandContainer;
 import org.telegram.command.CommandName;
-import org.telegram.models.BookingObject;
-import org.telegram.service.BookingObjectService;
+import org.telegram.models.TrainingObject;
+import org.telegram.service.TrainingObjectService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -37,7 +36,7 @@ public class AddTraining implements Command {
     private static final String ERROR_MESSAGE = "Ошибка при добавлении тренировки.";
 
     private final BotService botService;
-    private final BookingObjectService bookingObjectService;
+    private final TrainingObjectService trainingObjectService;
     private final CommandContainer commandContainer;
 
     private enum Step {
@@ -332,21 +331,21 @@ public class AddTraining implements Command {
     }
 
     private void saveTraining(long userId) {
-        BookingObject bookingObject = new BookingObject();
-        bookingObject.setDate(selectedDate);
-        bookingObject.setTrainingHour(selectedHour);
-        bookingObject.setTrainingMinute(selectedMinute);
-        bookingObject.setDuration(selectedDuration);
-        bookingObject.setLocation(selectedLocation);
-        bookingObject.setName(name);
-        bookingObject.setDescription(description);
-        bookingObject.setRecurring(recurring);
-        bookingObject.setParticipants(participants);
-        bookingObject.setCost(cost);
+        TrainingObject trainingObject = new TrainingObject();
+        trainingObject.setDate(selectedDate);
+        trainingObject.setTrainingHour(selectedHour);
+        trainingObject.setTrainingMinute(selectedMinute);
+        trainingObject.setDuration(selectedDuration);
+        trainingObject.setLocation(selectedLocation);
+        trainingObject.setName(name);
+        trainingObject.setDescription(description);
+        trainingObject.setRecurring(recurring);
+        trainingObject.setParticipants(participants);
+        trainingObject.setCost(cost);
 
-        System.out.println("BookingObject to be saved: " + bookingObject);
+        System.out.println("BookingObject to be saved: " + trainingObject);
 
-        bookingObjectService.save(bookingObject);
+        trainingObjectService.save(trainingObject);
         botService.sendText(userId, CONFIRMATION_MESSAGE);
         commandContainer.clearActiveCommand(String.valueOf(userId));
     }

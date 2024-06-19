@@ -3,15 +3,15 @@ package org.telegram.command.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.telegram.models.Training;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.bot.BotService;
 import org.telegram.bot.Button;
 import org.telegram.bot.UpdateUtil;
 import org.telegram.command.Command;
 import org.telegram.command.CommandName;
-import org.telegram.models.Booking;
 import org.telegram.models.User;
-import org.telegram.service.BookingService;
+import org.telegram.service.TrainingService;
 import org.telegram.service.UserService;
 
 import java.util.*;
@@ -34,7 +34,7 @@ public class MyTrainings implements Command {
     private static final String CONFIRM = "Вы уверены что хотите удалить бронь?";
 
     private final BotService botService;
-    private final BookingService bookingService;
+    private final TrainingService trainingService;
     private final UserService userService;
 
     private final Map<Long, Step> usersSteps = new HashMap<>();
@@ -67,12 +67,12 @@ public class MyTrainings implements Command {
         Optional<User> userOpt = userService.findById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            List<Booking> bookingList = user.isAdmin() ? bookingService.findAll() : bookingService.findByUserId(userId);
+            List<Training> trainingList = user.isAdmin() ? trainingService.findAll() : trainingService.findByUserId(userId);
 
-            if (bookingList.isEmpty()) {
+            if (trainingList.isEmpty()) {
                 botService.sendText(userId, NO_BOOKINGS);
             } else {
-                bookingList.forEach(booking -> botService.sendWithKeyboard(userId,
+                trainingList.forEach(booking -> botService.sendWithKeyboard(userId,
                         booking.getFullText(user.isAdmin()), getDeleteButton(booking)));
             }
 
@@ -81,7 +81,7 @@ public class MyTrainings implements Command {
     }
 
     private void deleteBooking(long userId, String input) {
-        Optional<Booking> bookingOpt = bookingService.findById(input);
+        Optional<Training> bookingOpt = trainingService.findById(input);
         if (bookingOpt.isPresent()) {
             botService.sendWithKeyboard(userId, CONFIRM, getConfirmButtons(bookingOpt.get()));
             usersSteps.put(userId, Step.CONFIRM);
@@ -89,9 +89,9 @@ public class MyTrainings implements Command {
     }
 
     private void confirmDeleting(long userId, String input) {
-        Optional<Booking> bookingOpt = bookingService.findById(input);
+        Optional<Training> bookingOpt = trainingService.findById(input);
         if (bookingOpt.isPresent()) {
-            bookingService.delete(bookingOpt.get());
+            trainingService.delete(bookingOpt.get());
             botService.sendText(userId, DONE);
         }
 
@@ -99,13 +99,13 @@ public class MyTrainings implements Command {
         isFinished = true;
     }
 
-    private List<Button> getDeleteButton(Booking booking) {
-        return List.of(new Button(String.valueOf(booking.getId()), DELETE));
+    private List<Button> getDeleteButton(Training training) {
+        return List.of(new Button(String.valueOf(training.getId()), DELETE));
     }
 
-    private List<Button> getConfirmButtons(Booking booking) {
+    private List<Button> getConfirmButtons(Training training) {
         return List.of(
-                new Button(String.valueOf(booking.getId()), DELETE),
+                new Button(String.valueOf(training.getId()), DELETE),
                 new Button("0", CANCEL)
         );
     }

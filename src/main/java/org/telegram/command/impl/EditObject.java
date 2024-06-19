@@ -9,8 +9,8 @@ import org.telegram.bot.Button;
 import org.telegram.bot.UpdateUtil;
 import org.telegram.command.Command;
 import org.telegram.command.CommandName;
-import org.telegram.models.BookingObject;
-import org.telegram.service.BookingObjectService;
+import org.telegram.models.TrainingObject;
+import org.telegram.service.TrainingObjectService;
 
 import java.util.*;
 
@@ -40,11 +40,11 @@ public class EditObject implements Command {
     private static final String DONE = "Готово";
 
     private final BotService botService;
-    private final BookingObjectService bookingObjectService;
+    private final TrainingObjectService trainingObjectService;
 
     private final Map<Long, Step> usersSteps = new HashMap<>();
     private boolean isFinished;
-    private BookingObject bookingObject;
+    private TrainingObject trainingObject;
 
     @Override
     public boolean execute(Update update, boolean isBeginning) {
@@ -80,9 +80,9 @@ public class EditObject implements Command {
     private void selectObject(long userId, String input) {
         try {
             Long objectId = Long.parseLong(input);
-            Optional<BookingObject> objectOpt = bookingObjectService.findById(objectId);
+            Optional<TrainingObject> objectOpt = trainingObjectService.findById(objectId);
             if (objectOpt.isPresent()) {
-                bookingObject = objectOpt.get();
+                trainingObject = objectOpt.get();
                 botService.sendWithKeyboard(userId, SELECT_ACTION, getActionsButtons());
                 usersSteps.put(userId, Step.SELECT_ACTION);
             } else {
@@ -100,31 +100,31 @@ public class EditObject implements Command {
                 case CHANGE_NAME -> botService.sendText(userId, ENTER_NEW_NAME);
                 case CHANGE_DESCRIPTION -> botService.sendText(userId, ENTER_NEW_DESCRIPTION);
                 case DELETE -> botService.sendWithKeyboard(userId,
-                        String.format(CONFIRM_DELETING, bookingObject.getName()), getConfirmButtons());
+                        String.format(CONFIRM_DELETING, trainingObject.getName()), getConfirmButtons());
             }
             usersSteps.put(userId, step);
         } catch (IllegalArgumentException ignored) {}
     }
 
     private void changeName(long userId, String input) {
-        bookingObject.setName(input);
+        trainingObject.setName(input);
         confirmChanges(userId);
     }
 
     private void changeDescription(long userId, String input) {
-        bookingObject.setDescription(input);
+        trainingObject.setDescription(input);
         confirmChanges(userId);
     }
 
     private void delete(long userId) {
-        bookingObjectService.delete(bookingObject);
+        trainingObjectService.delete(trainingObject);
         botService.sendText(userId, DONE);
         usersSteps.put(userId, Step.BEGIN);
         isFinished = true;
     }
 
     private void confirmChanges(long userId) {
-        bookingObjectService.save(bookingObject);
+        trainingObjectService.save(trainingObject);
         botService.sendText(userId, DONE);
         usersSteps.put(userId, Step.BEGIN);
         isFinished = true;
@@ -132,7 +132,7 @@ public class EditObject implements Command {
 
     private List<Button> getObjectsButtons() {
         List<Button> objectsButtons = new ArrayList<>();
-        List<BookingObject> objectsList = bookingObjectService.findAll();
+        List<TrainingObject> objectsList = trainingObjectService.findAll();
         objectsList.forEach(object -> objectsButtons.add(new Button(String.valueOf(object.getId()), object.getName())));
         return objectsButtons;
     }

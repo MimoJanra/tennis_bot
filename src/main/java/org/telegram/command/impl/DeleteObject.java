@@ -7,8 +7,8 @@ import org.telegram.bot.BotService;
 import org.telegram.bot.UpdateUtil;
 import org.telegram.command.Command;
 import org.telegram.command.CommandName;
-import org.telegram.models.BookingObject;
-import org.telegram.service.BookingObjectService;
+import org.telegram.models.TrainingObject;
+import org.telegram.service.TrainingObjectService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -28,13 +28,13 @@ public class DeleteObject implements Command {
     private static final String ERROR_MESSAGE = "Ошибка при удалении тренировки.";
 
     private final BotService botService;
-    private final BookingObjectService bookingObjectService;
+    private final TrainingObjectService trainingObjectService;
 
     @Override
     public boolean execute(Update update, boolean isBeginning) {
         long userId = UpdateUtil.getUserId(update);
         if (isBeginning) {
-            List<BookingObject> trainings = bookingObjectService.findAll();
+            List<TrainingObject> trainings = trainingObjectService.findAll();
             sendTrainings(userId, trainings);
             return false;
         } else {
@@ -42,7 +42,7 @@ public class DeleteObject implements Command {
             if (input.startsWith("confirm_delete_")) {
                 try {
                     long trainingId = Long.parseLong(input.replace("confirm_delete_", ""));
-                    bookingObjectService.deleteById(trainingId);
+                    trainingObjectService.deleteById(trainingId);
                     botService.sendText(userId, CONFIRMATION_MESSAGE);
                     return true;
                 } catch (Exception e) {
@@ -62,9 +62,9 @@ public class DeleteObject implements Command {
         return CommandName.DELETE_OBJECT;
     }
 
-    private void sendTrainings(long userId, List<BookingObject> trainings) {
+    private void sendTrainings(long userId, List<TrainingObject> trainings) {
         for (int i = 0; i < trainings.size(); i += 3) {
-            List<BookingObject> sublist = trainings.subList(i, Math.min(i + 3, trainings.size()));
+            List<TrainingObject> sublist = trainings.subList(i, Math.min(i + 3, trainings.size()));
             String message = sublist.stream()
                     .map(training -> training.getId() + ": " + training.getName())
                     .collect(Collectors.joining("\n"));
@@ -72,10 +72,10 @@ public class DeleteObject implements Command {
         }
     }
 
-    private InlineKeyboardMarkup createInlineKeyboard(List<BookingObject> trainings) {
+    private InlineKeyboardMarkup createInlineKeyboard(List<TrainingObject> trainings) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        for (BookingObject training : trainings) {
+        for (TrainingObject training : trainings) {
             List<InlineKeyboardButton> row = new ArrayList<>();
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText("Удалить " + training.getName());
@@ -88,9 +88,9 @@ public class DeleteObject implements Command {
     }
 
     private void sendDeleteConfirmation(long userId, long trainingId) {
-        Optional<BookingObject> trainingOpt = bookingObjectService.findById(trainingId);
+        Optional<TrainingObject> trainingOpt = trainingObjectService.findById(trainingId);
         if (trainingOpt.isPresent()) {
-            BookingObject training = trainingOpt.get();
+            TrainingObject training = trainingOpt.get();
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
             List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
