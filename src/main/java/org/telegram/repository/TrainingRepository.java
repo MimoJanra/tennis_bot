@@ -11,6 +11,8 @@ import java.util.List;
 public interface TrainingRepository extends CrudRepository<Training, Long> {
     @Nonnull
     List<Training> findAll();
+
     List<Training> findByDateAndTrainingObject(LocalDate date, TrainingObject trainingObject);
+
     List<Training> findByUserId(long userId);
 }

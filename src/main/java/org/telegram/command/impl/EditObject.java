@@ -17,15 +17,6 @@ import java.util.*;
 @Component
 public class EditObject implements Command {
 
-    private enum Step {
-        BEGIN,
-        SELECT_OBJECT,
-        SELECT_ACTION,
-        CHANGE_NAME,
-        CHANGE_DESCRIPTION,
-        DELETE
-    }
-
     private static final String SELECT_OBJECT = "Выберите тренировку для изменения";
     private static final String CHANGE_NAME = "Изменить название";
     private static final String CHANGE_DESCRIPTION = "Изменить описание";
@@ -36,10 +27,8 @@ public class EditObject implements Command {
     private static final String ENTER_NEW_DESCRIPTION = "Введите новое описание";
     private static final String CONFIRM_DELETING = "Вы уверены что хотите удалить %s?";
     private static final String DONE = "Готово";
-
     private final BotService botService;
     private final TrainingObjectService trainingObjectService;
-
     private final Map<Long, Step> usersSteps = new HashMap<>();
     private boolean isFinished;
     private TrainingObject trainingObject;
@@ -101,7 +90,8 @@ public class EditObject implements Command {
                         String.format(CONFIRM_DELETING, trainingObject.getName()), getConfirmButtons());
             }
             usersSteps.put(userId, step);
-        } catch (IllegalArgumentException ignored) {}
+        } catch (IllegalArgumentException ignored) {
+        }
     }
 
     private void changeName(long userId, String input) {
@@ -148,5 +138,14 @@ public class EditObject implements Command {
                 new Button("confirm_delete", DELETE),
                 new Button(CANCEL, CANCEL)
         );
+    }
+
+    private enum Step {
+        BEGIN,
+        SELECT_OBJECT,
+        SELECT_ACTION,
+        CHANGE_NAME,
+        CHANGE_DESCRIPTION,
+        DELETE
     }
 }

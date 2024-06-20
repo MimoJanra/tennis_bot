@@ -39,21 +39,7 @@ public class AddTraining implements Command {
     private final BotService botService;
     private final TrainingObjectService trainingObjectService;
     private final CommandContainer commandContainer;
-
-    private enum Step {
-        SELECT_DATE,
-        SELECT_HOUR,
-        SELECT_MINUTE,
-        SELECT_DURATION,
-        SELECT_LOCATION,
-        ENTER_NAME,
-        ENTER_DESCRIPTION,
-        SELECT_PARTICIPANTS,
-        ENTER_COST,
-        SELECT_RECURRING,
-        CONFIRM
-    }
-
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private Step currentStep = Step.SELECT_DATE;
     private LocalDate selectedDate;
     private String selectedHour;
@@ -65,8 +51,6 @@ public class AddTraining implements Command {
     private int participants;
     private double cost;
     private boolean recurring;
-
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     public boolean execute(Update update, boolean isBeginning) {
@@ -374,5 +358,19 @@ public class AddTraining implements Command {
         addCancelButton(rows);
         inlineKeyboardMarkup.setKeyboard(rows);
         return inlineKeyboardMarkup;
+    }
+
+    private enum Step {
+        SELECT_DATE,
+        SELECT_HOUR,
+        SELECT_MINUTE,
+        SELECT_DURATION,
+        SELECT_LOCATION,
+        ENTER_NAME,
+        ENTER_DESCRIPTION,
+        SELECT_PARTICIPANTS,
+        ENTER_COST,
+        SELECT_RECURRING,
+        CONFIRM
     }
 }

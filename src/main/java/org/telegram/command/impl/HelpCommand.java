@@ -15,8 +15,7 @@ public class HelpCommand implements Command {
     private static final String HELP_MESSAGE = "Список доступных команд:\n" +
             "/start - Начало работы\n" +
             "/help - Список команд\n" +
-            "/new_booking - Записаться на тренировку\n" +
-            "/add_training - Добавить тренировку";
+            "/new_booking - Записаться на тренировку";
 
     private final BotService botService;
 

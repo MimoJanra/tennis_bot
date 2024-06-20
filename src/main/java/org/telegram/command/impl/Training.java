@@ -25,33 +25,21 @@ import java.util.*;
 @Component
 public class Training implements Command {
 
-    private enum Step {
-        BEGIN,
-        SELECT_DATE,
-        SELECT_TRAINING,
-        ADMIN_CONFIRMATION,
-        CONFIRMATION
-    }
-
-    @Value("${bot.admin-usernames}")
-    private String adminUsername;
-
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy");
-
     private static final String SELECT_DATE = "Выберите дату:";
     private static final String SELECT_TRAINING = "Выберите тренировку с доступными местами:";
     private static final String INCORRECT_DAY = "На этот день не получится, выберите другой";
     private static final String CONFIRMATION_TEXT = "Готово! Вы записались на тренировку %s\n%s";
     private static final String ADMIN_CONFIRMATION_TEXT = "Пользователь %s записался на тренировку %s в %s. Подтвердите запись.";
     private static final String APPROVAL_TEXT = "Ваша запись на тренировку %s в %s была подтверждена.";
-
     private final BotService botService;
     private final TrainingService trainingService;
     private final TrainingObjectService trainingObjectService;
     private final UserService userService;
-
     private final Map<Long, Step> usersSteps = new HashMap<>();
     private final Map<Long, Long> pendingApprovals = new HashMap<>();
+    @Value("${bot.admin-usernames}")
+    private String adminUsername;
     private boolean isFinished;
     private org.telegram.models.Training training;
     private LocalDate selectedDate;
@@ -86,7 +74,7 @@ public class Training implements Command {
 
         Optional<User> userOpt = userService.findById(userId);
         training = new org.telegram.models.Training();
-        training.setUser(userOpt.orElseGet(() -> userService.create(update)));
+        training.setUser(userOpt.orElseGet(() -> userService.createOrUpdate(update)));
 
         botService.sendMarkup(userId, SELECT_DATE, makeCalendar());
         usersSteps.put(userId, Step.SELECT_DATE);
@@ -118,9 +106,12 @@ public class Training implements Command {
     private void selectTraining(Long userId, String input) {
         try {
             Long trainingId = Long.parseLong(input);
+            System.out.println("Training ID: " + trainingId);
             Optional<TrainingObject> trainingOpt = trainingObjectService.findById(trainingId);
+            System.out.println("Training found: " + trainingOpt.isPresent());
             if (trainingOpt.isPresent()) {
                 TrainingObject training = trainingOpt.get();
+                System.out.println("Booking slot for training: " + training);
                 training.bookSlot();
                 trainingObjectService.save(training);
 
@@ -135,6 +126,9 @@ public class Training implements Command {
             }
         } catch (NumberFormatException e) {
             botService.sendText(userId, "Неверный формат ID тренировки.");
+        } catch (Exception e) {
+            botService.sendText(userId, "Произошла ошибка при выборе тренировки.");
+            e.printStackTrace();
         }
     }
 
@@ -143,10 +137,15 @@ public class Training implements Command {
         String adminText = String.format(ADMIN_CONFIRMATION_TEXT,
                 this.training.getUser().getName(), training.getName(), training.getLocation());
 
-        Long adminUserId = userService.findByUsername(adminUsername).map(User::getId).orElse(null);
-        if (adminUserId != null) {
-            botService.sendMarkup(adminUserId, adminText, makeAdminApprovalButtons(userId));
-            pendingApprovals.put(userId, adminUserId);
+        Long adminChatId = userService.findByUsername(adminUsername).map(User::getChatId).orElse(null);
+
+        if (adminChatId != null) {
+            System.out.println("Sending admin confirmation to chat: " + adminChatId);
+            System.out.println("Admin message: " + adminText);
+            botService.sendMarkup(adminChatId, adminText, makeAdminApprovalButtons(userId));
+            pendingApprovals.put(userId, adminChatId);
+        } else {
+            System.out.println("Admin user not found for username: " + adminUsername);
         }
 
         usersSteps.put(userId, Step.CONFIRMATION);
@@ -235,5 +234,13 @@ public class Training implements Command {
 
         inlineKeyboardMarkup.setKeyboard(rows);
         return inlineKeyboardMarkup;
+    }
+
+    private enum Step {
+        BEGIN,
+        SELECT_DATE,
+        SELECT_TRAINING,
+        ADMIN_CONFIRMATION,
+        CONFIRMATION
     }
 }

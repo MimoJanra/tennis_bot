@@ -34,6 +34,9 @@ public class StartCommand implements Command {
         String username = update.getMessage().getFrom().getUserName();
         boolean isAdmin = adminUsernames.contains(username);
 
+        String chatId = update.getMessage().getChatId().toString();
+        commandContainer.clearActiveCommand(chatId);
+
         botService.sendMarkup(userId, START_MESSAGE, getStartKeyboard(isAdmin));
         return true;
     }

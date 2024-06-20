@@ -24,6 +24,9 @@ public class TrainingObjectService {
     }
 
     public void save(TrainingObject trainingObject) {
+        if (trainingObject.getAvailableSlots() == 0) {
+            trainingObject.setAvailableSlots(trainingObject.getParticipants());
+        }
         trainingObjectRepository.save(trainingObject);
     }
 
@@ -40,7 +43,9 @@ public class TrainingObjectService {
     }
 
     public List<TrainingObject> findAvailableByDate(LocalDate date) {
-        return trainingObjectRepository.findByDate(date).stream()
+        List<TrainingObject> trainingObjects = trainingObjectRepository.findByDate(date);
+        System.out.println("Training objects on date " + date + ": " + trainingObjects);
+        return trainingObjects.stream()
                 .filter(bo -> bo.getAvailableSlots() > 0)
                 .collect(Collectors.toList());
     }

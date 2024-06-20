@@ -2,8 +2,8 @@ package org.telegram.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.telegram.repository.TypeRepository;
 import org.telegram.models.Type;
+import org.telegram.repository.TypeRepository;
 
 import java.util.List;
 import java.util.Optional;

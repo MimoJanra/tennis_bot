@@ -30,6 +30,14 @@ public class TrainingObject {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @PrePersist
+    @PreUpdate
+    private void initializeAvailableSlots() {
+        if (availableSlots == 0) {
+            availableSlots = participants;
+        }
+    }
+
     public void bookSlot() {
         if (availableSlots > 0) {
             availableSlots--;

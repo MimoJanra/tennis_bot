@@ -22,22 +22,14 @@ import java.util.Optional;
 @Component
 public class MyTrainings implements Command {
 
-    private enum Step {
-        BEGIN,
-        DELETE,
-        CONFIRM
-    }
-
     private static final String NO_BOOKINGS = "У вас пока нет бронирований";
     private static final String DELETE = "Удалить";
     private static final String CANCEL = "Отмена";
     private static final String DONE = "Готово";
     private static final String CONFIRM = "Вы уверены что хотите удалить бронь?";
-
     private final BotService botService;
     private final TrainingService trainingService;
     private final UserService userService;
-
     private final Map<Long, Step> usersSteps = new HashMap<>();
     private boolean isFinished;
 
@@ -109,5 +101,11 @@ public class MyTrainings implements Command {
                 new Button(String.valueOf(training.getId()), DELETE),
                 new Button("0", CANCEL)
         );
+    }
+
+    private enum Step {
+        BEGIN,
+        DELETE,
+        CONFIRM
     }
 }

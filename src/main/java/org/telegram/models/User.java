@@ -15,6 +15,7 @@ public class User {
     private Long id;
     private String username;
     private boolean isAdmin;
+    private Long chatId;
 
     @OneToMany(mappedBy = "user")
     private List<Training> trainings;
