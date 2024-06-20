@@ -78,8 +78,8 @@ public class CommandContainer {
     }
 
     private boolean isAdminUser(String chatId) {
-        long userId = Long.parseLong(chatId);
-        Optional<User> userOpt = userService.findById(userId);
+        long chatIdLong = Long.parseLong(chatId);
+        Optional<User> userOpt = userService.findByChatId(chatIdLong);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             boolean isAdmin = user.isAdmin();

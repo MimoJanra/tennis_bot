@@ -20,11 +20,15 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    @Value("#{'${bot.admin-usernames}'.split(',')}")
+    @Value("#{\'${bot.admin-usernames}\'.split(\',\')}")
     private List<String> adminUsernames;
 
     public Optional<User> findById(long id) {
         return userRepository.findById(id);
+    }
+
+    public Optional<User> findByChatId(long chatId) {
+        return userRepository.findByChatId(chatId);
     }
 
     public User createOrUpdate(Update update) {
